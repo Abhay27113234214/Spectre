@@ -1,0 +1,633 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Dashboard - Spectre</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+
+        @font-face {
+            font-family: 'MyProjectFont';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{% static "fonts/Cormorant_Upright,EB_Garamond,Playfair_Display/EB_Garamond/EBGaramond-VariableFont_wght.ttf" %}') format('truetype');
+        }
+
+        * {
+            font-family: 'MyProjectFont', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #faf8f6;
+            min-height: 100vh
+        }
+
+        .sidebar {
+            width: 280px;
+            /* --- Frosted Glass Effect --- */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(1px);
+            /* --- End Frosted Glass --- */
+            
+            position: fixed;
+            z-index: 100;
+            
+            /* --- This is the "detached" part --- */
+            top: 16px; /* Adds space at the top */
+            left: 16px; /* Adds space on the left */
+            height: calc(100vh - 32px); /* Makes height 100% minus top/bottom space */
+
+            /* --- This is the new border radius --- */
+            border-radius: 24px; /* Matches your card border radius */
+            
+            /* This border now goes all the way around */
+            /* border: 3px solid rgba(0, 0, 0, 0.1); Darker, semi-transparent border */
+            border: 2px solid #673324; /* Darker, semi-transparent border */
+            box-shadow: 3 8px 32px rgba(0, 0, 0, 0.07); /* Subtle shadow for depth */
+
+            /* --- This padding was already here --- */
+            padding: 32px 24px;
+            
+            /* --- This animation logic remains the same --- */
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-out 0.2s; /* Duration | Easing | Delay */
+        }
+
+        /* This class is toggled by JavaScript */
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        /* --- Main content is now full-width --- */
+        .main-content {
+            margin-left: 0; 
+            padding: 32px;
+            min-height: 100vh;
+            transition: margin-left .3s ease; /* Added for smoothness if you ever want a non-overlay sidebar */
+        }
+        
+        /* New overlay style */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            /* background: rgba(0, 0, 0, 0.4); */
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s ease;
+        }
+        
+        .sidebar-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(217, 119, 89, 0.08);
+            border-radius: 20px;
+            margin-bottom: 32px
+        }
+
+        .logo-section svg {
+            width: 28px;
+            height: 28px
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            color: #6b7280;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all .3s ease;
+            cursor: pointer;
+            margin-bottom: 8px
+        }
+
+        .nav-item:hover {
+            background: rgba(217, 119, 89, 0.1);
+            color: #d97759;
+            transform: translateX(4px)
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #d97759, #c66548);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(217, 119, 89, 0.3)
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 20px 26px;
+            margin-bottom: 32px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            /* Added padding-left for the menu button */
+            padding-left: 80px;
+            position: relative;
+            height: 90px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: all .4s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+            border-color: rgba(217, 119, 89, 0.2)
+        }
+
+        .metric-card {
+            position: relative;
+            overflow: hidden
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(217, 119, 89, 0.1) 0%, transparent 70%);
+            border-radius: 50%
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d2d2d;
+            margin: 8px 0
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px
+        }
+
+        .metric-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 8px
+        }
+
+        .change-positive {
+            background: #D1FAE5;
+            color: #065F46
+        }
+
+        .change-negative {
+            background: #FEE2E2;
+            color: #991B1B
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d2d2d;
+            margin-bottom: 20px
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d97759, #c66548);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .3s ease;
+            box-shadow: 0 4px 12px rgba(217, 119, 89, 0.3)
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(217, 119, 89, 0.4)
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #2d2d2d;
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .3s ease
+        }
+
+        .btn-secondary:hover {
+            background: #2d2d2d;
+            color: #fff;
+            border-color: #2d2d2d
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d97759, #c66548);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px
+        }
+
+        .risk-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            gap: 8px
+        }
+
+        .risk-high {
+            background: #FEE2E2;
+            color: #991B1B
+        }
+
+        .risk-medium {
+            background: #FEF3C7;
+            color: #92400E
+        }
+
+        .risk-low {
+            background: #D1FAE5;
+            color: #065F46
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, rgba(217, 119, 89, 0.08), rgba(198, 101, 72, 0.05));
+            border-left: 4px solid #d97759;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px
+        }
+
+        .insight-title {
+            font-weight: 700;
+            color: #2d2d2d;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .insight-text {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6
+        }
+
+        /* --- Menu button is now always visible --- */
+        .mobile-menu-btn {
+            display: block; 
+            position: absolute; /* Changed from fixed */
+            top: 50%;
+            transform: translateY(-50%);
+            left: 32px; /* Positioned inside the header */
+            z-index: 101;
+            background: #fff;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px
+        }
+
+        @media(max-width:768px) {
+            .grid-2 {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px
+        }
+
+        @media(max-width:1024px) {
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        @media(max-width:640px) {
+            .grid-4 {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .animate-in {
+            animation: slideIn .6s ease-out forwards
+        }
+
+        .delay-1 {
+            animation-delay: .1s
+        }
+
+        .delay-2 {
+            animation-delay: .2s
+        }
+
+        .delay-3 {
+            animation-delay: .3s
+        }
+
+        .sidebar:hover {
+            transform: translateX(0);
+            transition-delay: 0s;
+        }
+
+        .sidebar:hover + .sidebar-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .logo-section span,
+        .nav-item {
+            font-family: 'MyProjectFont', 'DM Sans', sans-serif;
+            font-weight: 600; /* This makes the serif font look a bit stronger */
+        }
+    </style>
+</head>
+
+<body>
+    
+    <!-- Sidebar (Frosted Glass) -->
+    <div class="sidebar">
+        <div class="logo-section"><svg fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 13h2v6H3v-6zm4-4h2v10H7V9zm4-6h2v16h-2V3zm4 4h2v12h-2V7zm4 2h2v10h-2V9z" />
+            </svg><a href="{% url 'index' %}" style="font-size:20px;font-weight:700">Spectre</a></div>
+        <div class="nav-item active"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>Dashboard</div>
+        <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>Upload</div>
+        <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>Reports</div>
+        <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>Risk Analysis</div>
+        <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>Settings</div>
+        <div style="margin-top:auto;padding-top:24px;border-top:1px solid rgba(0,0,0,0.06)">
+            <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>Logout</div>
+        </div>
+    </div>
+    
+    <!-- New Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="mobile-menu-btn">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </div>
+            
+            <div style="margin-left: 30px;">
+                <h1 style="font-size:28px;font-weight:700;color:#2d2d2d;margin-bottom:4px">You are viewing a Demo Dashboard.</h1>
+                <p style="color:#6b7280;font-size:14px">Upload your data to get started</p>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center"><button class="btn-primary">Upload your File</button>
+            </div>
+        </div>
+        
+        <!-- ... rest of your dashboard content ... -->
+        <div class="grid-4 animate-in delay-1">
+            <div class="card metric-card">
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-value">$3.2M</div>
+                <div class="metric-change change-positive"><svg width="16" height="16" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>24.5%</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-label">Profit Margin</div>
+                <div class="metric-value">31.8%</div>
+                <div class="metric-change change-positive"><svg width="16" height="16" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>6.2%</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-label">Cash Position</div>
+                <div class="metric-value">$840K</div>
+                <div class="metric-change change-positive"><svg width="16" height="16" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>12.3%</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-label">Health Score</div>
+                <div class="metric-value">92/100</div>
+                <div style="margin-top:8px">
+                    <div style="height:6px;background:rgba(0,0,0,0.06);border-radius:10px;overflow:hidden">
+                        <div
+                            style="width:92%;height:100%;background:linear-gradient(90deg,#10b981,#059669);border-radius:10px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="grid-2 animate-in delay-2" style="margin-top:24px">
+            <div class="card">
+                <div class="section-title">Revenue Growth</div>
+                <div class="chart-container"><canvas id="revenueChart"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="section-title">Expense Breakdown</div>
+                <div class="chart-container"><canvas id="expenseChart"></canvas></div>
+            </div>
+        </div>
+        <div class="grid-2 animate-in delay-3" style="margin-top:24px">
+            <div class="card">
+                <div class="section-title">Quarterly Performance</div>
+                <div class="chart-container"><canvas id="quarterlyChart"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="section-title">Cash Flow Trend</div>
+                <div class="chart-container"><canvas id="cashFlowChart"></canvas></div>
+            </div>
+        </div>
+        <div class="animate-in delay-3" style="margin-top:24px">
+            <div class="card">
+                <div class="section-title">AI-Powered Insights</div>
+                <div class="insight-card">
+                    <div class="insight-title"><svg width="20" height="20" fill="#d97759" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                                clip-rule="evenodd" />
+                        </svg>Strong Growth Opportunity</div>
+                    <div class="insight-text">Your revenue has grown 24.5% year-over-year with improving profit margins.
+                        Current cash reserves of $840K provide excellent runway for strategic expansion into new markets
+                        or R&D investment.</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title"><svg width="20" height="20" fill="#d97759" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>Monitor Operating Expenses</div>
+                    <div class="insight-text">Operating expenses increased 8.2% in Q4. Consider implementing cost
+                        optimization strategies to maintain your competitive profit margin advantage while scaling
+                        operations.</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title"><svg width="20" height="20" fill="#d97759" viewBox="0 0 20 20">
+                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                        </svg>Healthy Financial Position</div>
+                    <div class="insight-text">Your debt-to-equity ratio of 0.42 is well below industry average,
+                        indicating strong financial stability. Current ratio of 2.8 shows excellent short-term liquidity
+                        management.</div>
+                </div>
+            </div>
+        </div>
+        <div class="card animate-in delay-3" style="margin-top:24px">
+            <div class="section-title">Risk Assessment</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:16px">
+                <div
+                    style="padding:16px;background:rgba(217,119,89,0.05);border-radius:16px;border-left:4px solid #d97759">
+                    <div style="font-weight:700;color:#2d2d2d;margin-bottom:8px">Financial Risks</div>
+                    <div style="display:flex;flex-wrap:gap;gap:8px"><span class="risk-badge risk-low">Liquidity:
+                            Low</span><span class="risk-badge risk-medium">Debt Load: Medium</span></div>
+                </div>
+                <div
+                    style="padding:16px;background:rgba(217,119,89,0.05);border-radius:16px;border-left:4px solid #d97759">
+                    <div style="font-weight:700;color:#2d2d2d;margin-bottom:8px">Operational Risks</div>
+                    <div style="display:flex;flex-wrap:gap;gap:8px"><span class="risk-badge risk-medium">Cost Inflation:
+                            Medium</span><span class="risk-badge risk-low">Efficiency: Low</span></div>
+                </div>
+                <div
+                    style="padding:16px;background:rgba(217,119,89,0.05);border-radius:16px;border-left:4px solid #d97759">
+                    <div style="font-weight:700;color:#2d2d2d;margin-bottom:8px">Market Risks</div>
+                    <div style="display:flex;flex-wrap:gap;gap:8px"><span class="risk-badge risk-medium">Competition:
+                            Medium</span><span class="risk-badge risk-low">Demand: Low</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Menu Toggle -->
+    <script>
+        // --- Chart.js Code (unchanged) ---
+        const chartColors = { primary: '#d97759', secondary: '#c66548', tertiary: '#e8b4a0', success: '#10b981', warning: '#f59e0b', danger: '#ef4444' }; 
+        Chart.defaults.font.family = "'DM Sans',sans-serif"; 
+        Chart.defaults.color = '#6b7280'; 
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d'); 
+        new Chart(revenueCtx, { type: 'bar', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: '2024', data: [245, 289, 312, 298, 335, 342], backgroundColor: chartColors.primary, borderRadius: 8 }, { label: '2023', data: [198, 215, 228, 242, 265, 274], backgroundColor: chartColors.tertiary, borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { padding: 20, usePointStyle: true } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + v + 'K' } } } } }); 
+        const expenseCtx = document.getElementById('expenseChart').getContext('2d'); 
+        new Chart(expenseCtx, { type: 'doughnut', data: { labels: ['Operations', 'Marketing', 'R&D', 'Admin', 'Other'], datasets: [{ data: [45, 25, 18, 8, 4], backgroundColor: [chartColors.primary, chartColors.secondary, chartColors.tertiary, '#fbbf24', '#94a3b8'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { padding: 15, usePointStyle: true } } } } }); 
+        const quarterlyCtx = document.getElementById('quarterlyChart').getContext('2d'); 
+        new Chart(quarterlyCtx, { type: 'line', data: { labels: ['Q1', 'Q2', 'Q3', 'Q4'], datasets: [{ label: 'Revenue', data: [720, 845, 912, 723], borderColor: chartColors.primary, backgroundColor: 'rgba(217,119,89,0.1)', tension: 0.4, fill: true, borderWidth: 3 }, { label: 'Profit', data: [145, 178, 195, 159], borderColor: chartColors.success, backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.4, fill: true, borderWidth: 3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { padding: 20, usePointStyle: true } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + v + 'K' } } } } }); 
+        const cashFlowCtx = document.getElementById('cashFlowChart').getContext('2d'); 
+        new Chart(cashFlowCtx, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Operating', data: [85, 92, 105, 98, 115, 128], borderColor: chartColors.success, tension: 0.4, borderWidth: 3 }, { label: 'Investing', data: [-25, -18, -32, -15, -28, -22], borderColor: chartColors.warning, tension: 0.4, borderWidth: 3 }, { label: 'Financing', data: [-12, -8, -15, -10, -5, -8], borderColor: chartColors.danger, tension: 0.4, borderWidth: 3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { padding: 20, usePointStyle: true } } }, scales: { y: { ticks: { callback: v => '$' + v + 'K' } } } } });
+
+        // --- New Menu Toggle JavaScript ---
+        const menuButton = document.querySelector('.mobile-menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        menuButton.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+    </script>
+</body>
+
+</html>
