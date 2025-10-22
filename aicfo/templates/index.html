@@ -1,0 +1,635 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Spectre</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'MyProjectFont';
+            /* You choose this name! */
+            font-style: normal;
+            font-weight: 400;
+            /* 400 is 'normal' or 'regular' */
+            /* src: url('Cormorant_Upright,EB_Garamond,Playfair_Display/Playfair_Display/PlayfairDisplay-VariableFont_wght.ttf') format('truetype');  */
+            src: url('Cormorant_Upright,EB_Garamond,Playfair_Display/EB_Garamond/EBGaramond-VariableFont_wght.ttf') format('truetype');
+            /* src: url('Cormorant_Upright,EB_Garamond,Playfair_Display/Cormorant_Upright/CormorantUpright-Regular.ttf') format('truetype');  */
+        }
+
+        * {
+            font-family: 'MyProjectFont'
+        }
+
+        body {
+            background: #faf8f6
+        }
+
+        .nav-container {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 60px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            transition: all .3s ease
+        }
+
+        .nav-link {
+            position: relative;
+            color: black;
+            transition: color .3s ease
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #d97759;
+            transition: width .3s ease
+        }
+
+        .nav-link:hover {
+            color: #d97759
+        }
+
+        .nav-link:hover::after {
+            width: 100%
+        }
+
+        @keyframes gentle-float {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-10px)
+            }
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .delay-1 {
+            animation-delay: .1s
+        }
+
+        .delay-2 {
+            animation-delay: .2s
+        }
+
+        .delay-3 {
+            animation-delay: .3s
+        }
+
+        .delay-4 {
+            animation-delay: .4s
+        }
+
+        .float {
+            animation: gentle-float 4s ease-in-out infinite
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: all .4s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border-color: rgba(217, 119, 89, 0.3)
+        }
+
+        .btn-primary {
+            background: #d97759;
+            color: #fff;
+            border-radius: 50px;
+            padding: 14px 32px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all .3s ease;
+            border: none;
+            cursor: pointer
+        }
+
+        .btn-primary:hover {
+            background: #c66548;
+            box-shadow: 0 8px 24px rgba(217, 119, 89, 0.3);
+            transform: translateY(-2px)
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #2d2d2d;
+            border: 2px solid #2d2d2d;
+            border-radius: 50px;
+            padding: 12px 32px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all .3s ease;
+            cursor: pointer
+        }
+
+        .btn-secondary:hover {
+            background: #2d2d2d;
+            color: #fff
+        }
+
+        .accent-text {
+            color: #d97759
+        }
+
+        .soft-shadow {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06)
+        }
+
+        .image-container {
+            background: linear-gradient(135deg, #f5f1ed 0%, #e8e3dd 100%);
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background-color: #fef6f3;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(217, 119, 89, 0.15);
+            transition: all .3s ease
+        }
+
+        .feature-icon svg {
+            transition: color .3s ease;
+            /* transition: background .3s ease; */
+        }
+
+        .card:hover .feature-icon {
+            background-color: #d97759;
+            border-color: transparent
+        }
+
+        .card:hover .feature-icon svg {
+            color: #fff
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: all .3s ease
+        }
+
+        .stat-card:hover {
+            border-color: rgba(217, 119, 89, 0.2)
+        }
+
+        .process-number {
+            width: 72px;
+            height: 72px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #d97759;
+            border: 3px solid rgba(217, 119, 89, 0.15);
+            transition: all .3s ease
+        }
+
+        .process-card:hover .process-number {
+            background: #d97759;
+            color: #fff;
+            border-color: #d97759;
+            transform: scale(1.1)
+        }
+
+        .process-card:hover .process-number {
+            background: #d97759;
+            color: #fff;
+            border-color: #d97759;
+            transform: scale(1.1)
+        }
+
+        /* --- Logo Ticker Styles --- */
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .logo-ticker-container {
+            overflow: hidden;
+            position: relative;
+            /* This creates the fade-out effect on the edges */
+            -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+        }
+
+        .logo-ticker-track {
+            display: flex;
+            gap: 24px;
+            /* Space between logos */
+            width: max-content;
+            animation: scroll 30s linear infinite;
+            /* Adjust 30s to be faster or slower */
+        }
+
+        .logo-item {
+            /* This is the pill/card style from the image, matching your site */
+            display: grid;
+            place-items: center;
+            width: 200px;
+            /* Set a fixed width for each logo pill */
+            height: 90px;
+            /* Set a fixed height */
+            background: #fff;
+            border-radius: 20px;
+            /* Matches your stat-card radius */
+            padding: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            /* Matches your card border */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .logo-item img {
+            max-width: 100%;
+            max-height: 40px;
+            /* Control the logo size inside the pill */
+            filter: grayscale(100%);
+            /* Makes all logos uniform */
+            opacity: 0.8;
+            transition: all .3s ease;
+        }
+
+        /* Adds a nice hover effect */
+        .logo-item:hover img {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+    </style>
+</head>
+</style>
+</head>
+
+<body>
+    <nav class="fixed w-full z-50 px-6 lg:px-8 pt-6">
+        <div class="nav-container max-w-7xl mx-auto px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2"><svg class="w-8 h-8 text-gray-800" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path d="M3 13h2v6H3v-6zm4-4h2v10H7V9zm4-6h2v16h-2V3zm4 4h2v12h-2V7zm4 2h2v10h-2V9z" />
+                    </svg><span class="text-xl font-semibold text-gray-900">Spectre</span></div>
+                <div class="hidden lg:flex items-center space-x-10"><a href="#features"
+                        class="nav-link text-sm font-medium">Features</a><a href="#process"
+                        class="nav-link text-sm font-medium">How it works</a><a href="#security"
+                        class="nav-link text-sm font-medium">Security</a></div><button class="btn-secondary">Get
+                    started</button>
+            </div>
+        </div>
+    </nav>
+    <section class="pt-40 pb-20 px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="order-2 lg:order-1">
+                    <div class="image-container p-12 soft-shadow float"
+                        style="background-image: url(&quot;{% static 'images/main_flower.jpg' %}&quot;); background-size: cover; background-position: left; background-repeat: no-repeat;">
+                        <div class="bg-white/75 backdrop-blur-md rounded-3xl p-8 shadow-lg">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="text-sm font-medium text-gray-600">Financial Health</div>
+                                <div class="text-4xl font-bold text-gray-900">92<span
+                                        class="text-xl text-gray-400">/100</span></div>
+                            </div>
+                            <div class="h-3 bg-gray-100 rounded-full mb-8">
+                                <div class="h-full rounded-full" style="width:92%;background:#d97759"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="stat-card">
+                                    <div class="text-xs font-medium text-gray-600 mb-2">Revenue</div>
+                                    <div class="text-2xl font-bold text-gray-900">$3.2M</div>
+                                    <div class="text-xs text-green-600 mt-1 font-semibold">↑ 24.5%</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="text-xs font-medium text-gray-600 mb-2">Profit Margin</div>
+                                    <div class="text-2xl font-bold text-gray-900">31.8%</div>
+                                    <div class="text-xs text-green-600 mt-1 font-semibold">↑ 6.2%</div>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-2xl p-5 border border-orange-200/50">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                                    <div class="text-xs font-semibold text-gray-700">AI Insight</div>
+                                </div>
+                                <p class="text-sm text-gray-700 leading-relaxed">Strong growth trajectory with healthy
+                                    margins. Consider expanding operations given current cash position.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-1 lg:order-2 space-y-8 fade-in">
+                    <div class="inline-block px-4 py-2 bg-orange-100/60 rounded-full mb-4"><span
+                            class="text-sm font-medium text-gray-700">Trusted by 1,000+ finance teams</span></div>
+                    <h1 class="text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 leading-tight mb-6">Understand
+                        your finances with <span class="accent-text">clarity</span></h1>
+                    <p class="text-xl text-gray-600 leading-relaxed mb-8 max-w-xl">Upload any financial document and
+                        receive AI-powered insights, risk analysis, and strategic recommendations in seconds.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 mb-8"><button class="btn-primary">Start analyzing
+                            free</button><button class="btn-secondary">Watch demo</button></div>
+                    <div class="flex items-center gap-6 text-sm text-gray-600">
+                        <div class="flex items-center gap-2"><svg class="w-5 h-5 text-green-600" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg><span>Free for 14 days</span></div>
+                        <div class="flex items-center gap-2"><svg class="w-5 h-5 text-green-600" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg><span>No credit card</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </section>
+
+    <section id="features" class="py-20 px-6 lg:px-8 ">
+        <section id="features" class="py-20 px-6 lg:px-8 ">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16 max-w-2xl mx-auto">
+                    <div class="inline-block px-4 py-2 bg-orange-100/60 rounded-full mb-4"><span
+                            class="text-sm font-medium text-gray-700">Platform capabilities</span></div>
+                    <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Everything you need to make better
+                        decisions</h2>
+                    <p class="text-lg text-gray-600">Powerful AI working quietly in the background</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card p-8">
+                        <div class="feature-icon mb-6"><svg class="w-8 h-8 text-orange-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg></div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Smart Upload</h3>
+                        <p class="text-gray-600 leading-relaxed">Upload PDFs, Excel, or CSV files. Our AI extracts
+                            and
+                            organizes all financial data automatically.</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="feature-icon mb-6"><svg class="w-8 h-8 text-orange-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg></div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Instant Metrics</h3>
+                        <p class="text-gray-600 leading-relaxed">Key financial ratios and KPIs calculated instantly,
+                            benchmarked against your industry.</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="feature-icon mb-6"><svg class="w-8 h-8 text-orange-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg></div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Trend Analysis</h3>
+                        <p class="text-gray-600 leading-relaxed">Visualize patterns and spot opportunities with
+                            intelligent
+                            charts and forecasting.</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="feature-icon mb-6"><svg class="w-8 h-8 text-orange-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg></div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Risk Detection</h3>
+                        <p class="text-gray-600 leading-relaxed">AI identifies financial, operational, and market
+                            risks
+                            with
+                            actionable mitigation strategies.</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="feature-icon mb-6"><svg class="w-8 h-8 text-orange-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg></div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Strategic Advice</h3>
+                        <p class="text-gray-600 leading-relaxed">Personalized recommendations for growth,
+                            optimization,
+                            and
+                            resource allocation.</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="feature-icon mb-6"><svg class="w-8 h-8 text-orange-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg></div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Bank-Grade Security</h3>
+                        <p class="text-gray-600 leading-relaxed">Your data is encrypted end-to-end. We never store
+                            sensitive
+                            information permanently.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto text-center">
+
+                <span class="text-6xl lg:text-7xl font-bold accent-text" style="line-height: 0.5;">“</span>
+
+                <p class="text-3xl lg:text-4xl font-medium text-gray-900 leading-relaxed mt-4">
+                    Spectre didn't just give us data; it gave us the clarity to make our next big move. It's the
+                    most
+                    valuable player on our finance team.
+                </p>
+
+                <div class="mt-8">
+                    <div class="text-lg font-semibold text-gray-900">Alex Cohen</div>
+                    <div class="text-sm text-gray-600">CEO, FutureTech Solutions</div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="process" class="py-20 px-6 lg:px-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 max-w-2xl mx-auto">
+                    <div class="inline-block px-4 py-2 bg-orange-100/60 rounded-full mb-4"><span
+                            class="text-sm font-medium text-gray-700">Simple workflow</span></div>
+                    <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Three steps to financial clarity
+                    </h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-12">
+                    <div class="process-card text-center">
+                        <div class="process-number mx-auto mb-6">1</div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Upload</h3>
+                        <p class="text-gray-600 leading-relaxed max-w-xs mx-auto">Drop your financial documents. We
+                            support
+                            PDFs, Excel, and CSV files of any size.</p>
+                    </div>
+                    <div class="process-card text-center">
+                        <div class="process-number mx-auto mb-6">2</div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Analyze</h3>
+                        <p class="text-gray-600 leading-relaxed max-w-xs mx-auto">Our AI extracts data, calculates
+                            metrics,
+                            and identifies patterns in seconds.</p>
+                    </div>
+                    <div class="process-card text-center">
+                        <div class="process-number mx-auto mb-6">3</div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Decide</h3>
+                        <p class="text-gray-600 leading-relaxed max-w-xs mx-auto">Review insights, charts, and
+                            recommendations to make informed decisions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+<br><br><br>
+
+    </section>
+    <section id="visual-break" class="py-40 px-6 lg:px-8 relative"
+        style="background-image: url(&quot;{% static 'images/main_flower.jpg' %}&quot;); background-size: cover; background-position: center center; background-attachment: fixed;">
+        <div class="absolute inset-0 bg-gray-900/60"></div>
+
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <h2 class="text-4xl lg:text-5xl font-bold text-white leading-tight">
+                "True insight isn't in the numbers. It's in the story they tell."
+            </h2>
+        </div>
+    </section>
+    <section class="py-20 px-6 lg:px-8 bg-gradient-to-br from-orange-50 to-orange-100/30">
+
+<br><br><br>
+
+        <section class="py-20 px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16 max-w-2xl mx-auto">
+                    <div class="inline-block px-4 py-2 bg-orange-100/60 rounded-full mb-4">
+                        <span class="text-sm font-medium text-gray-700">Companies</span>
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-bold text-gray-900">We're Trusted By</h2>
+                </div>
+
+                <div class="logo-ticker-container">
+                    <div class="logo-ticker-track">
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Company</span></div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">TechCorp</span></div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Innovate</span></div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Fintech</span></div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Solutions</span>
+                        </div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Venture</span></div>
+
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Company</span></div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">TechCorp</span></div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Innovate</span></div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Fintech</span></div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Solutions</span>
+                        </div>
+                        <div class="logo-item"><span class="text-2xl font-bold text-black-400">Venture</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="py-20 px-6 lg:px-8 bg-gradient-to-br from-orange-50 to-orange-100/30">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+                    From <span class="accent-text">chaotic</span> data to <span class="accent-text">clear</span>
+                    strategy.
+                </h2>
+                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Ready to understand your finances
+                    better?
+                </h2>
+                <p class="text-xl text-gray-600 mb-10 leading-relaxed">Join hundreds of teams making smarter
+                    financial
+                    decisions with Spectre</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8"><button class="btn-primary">Start
+                        free
+                        trial</button><button class="btn-secondary">Watch demo</button></div>
+                <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600"><span>✓ No
+                        credit
+                        card
+                        required</span><span>✓ 14-day free trial</span><span>✓ Cancel anytime</span></div>
+            </div>
+        </section>
+        <footer class="bg-white border-t border-gray-200 py-12 px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid md:grid-cols-4 gap-8 mb-8">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4"><svg class="w-7 h-7 text-gray-800" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <path d="M3 13h2v6H3v-6zm4-4h2v10H7V9zm4-6h2v16h-2V3zm4 4h2v12h-2V7zm4 2h2v10h-2V9z" />
+                            </svg><span class="text-lg font-semibold text-gray-900">Spectre</span></div>
+                        <p class="text-sm text-gray-600">Financial intelligence powered by AI</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-4">Product</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li><a href="#" class="hover:text-gray-900 transition">Features</a></li>
+                            <li><a href="#" class="hover:text-gray-900 transition">Pricing</a></li>
+                            <li><a href="#" class="hover:text-gray-900 transition">Security</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-4">Company</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li><a href="#" class="hover:text-gray-900 transition">About</a></li>
+                            <li><a href="#" class="hover:text-gray-900 transition">Blog</a></li>
+                            <li><a href="#" class="hover:text-gray-900 transition">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-4">Legal</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li><a href="#" class="hover:text-gray-900 transition">Privacy</a></li>
+                            <li><a href="#" class="hover:text-gray-900 transition">Terms</a></li>
+                            <li><a href="#" class="hover:text-gray-900 transition">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-200 pt-8 text-center text-sm text-gray-600">
+                    <p>&copy; 2024 Spectre. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+</body>
+
+</html>
