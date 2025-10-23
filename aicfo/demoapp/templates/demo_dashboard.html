@@ -26,40 +26,41 @@
         }
 
         body {
-            background: #faf8f6;
+            
             min-height: 100vh
         }
 
         .sidebar {
             width: 280px;
-            /* --- Frosted Glass Effect --- */
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(1px);
-            /* --- End Frosted Glass --- */
-            
+            backdrop-filter: blur(9px);
+            -webkit-backdrop-filter: blur(4px);
             position: fixed;
             z-index: 100;
-            
-            /* --- This is the "detached" part --- */
-            top: 16px; /* Adds space at the top */
-            left: 16px; /* Adds space on the left */
-            height: calc(100vh - 32px); /* Makes height 100% minus top/bottom space */
-
-            /* --- This is the new border radius --- */
-            border-radius: 24px; /* Matches your card border radius */
-            
-            /* This border now goes all the way around */
-            /* border: 3px solid rgba(0, 0, 0, 0.1); Darker, semi-transparent border */
-            border: 2px solid #673324; /* Darker, semi-transparent border */
-            box-shadow: 3 8px 32px rgba(0, 0, 0, 0.07); /* Subtle shadow for depth */
-
-            /* --- This padding was already here --- */
+            top: 16px;
+            left: 16px;
+            height: calc(100vh - 32px);
+            border-radius: 24px;
+            box-shadow: 0px 4px 50px rgb(171, 169, 169);
+            border: 2px solid rgba(0, 0, 0, 0.08);
             padding: 32px 24px;
-            
-            /* --- This animation logic remains the same --- */
             transform: translateX(-100%);
-            transition: transform 0.3s ease-out 0.2s; /* Duration | Easing | Delay */
+            transition: transform 0.3s ease-out 0.2s;
         }
+
+
+        /* .sidebar::before {
+            content: '';
+            position: absolute;
+            inset: 0; 
+            z-index: -1; 
+
+            background-image: url("{% static 'images/main_flower.jpg' %}");
+            background-size: cover; 
+            background-position: center bottom; 
+            opacity: 0.2; 
+
+            border-radius: inherit;
+        } */
 
         /* This class is toggled by JavaScript */
         .sidebar.open {
@@ -138,12 +139,15 @@
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
+            /* background: rgba(255, 255, 255, 0.9); */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 60px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            transition: all .3s ease;
             padding: 20px 26px;
             margin-bottom: 32px;
-            border: 1px solid rgba(0, 0, 0, 0.06);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -434,26 +438,26 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>Dashboard</div>
-        <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div style="color: black; font-weight: 550;" class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>Upload</div>
-        <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div style="color: black; font-weight: 550;" class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>Reports</div>
-        <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div style="color: black; font-weight: 550;" class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>Risk Analysis</div>
-        <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div style="color: black; font-weight: 550;" class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>Settings</div>
-        <div style="margin-top:auto;padding-top:24px;border-top:1px solid rgba(0,0,0,0.06)">
-            <div class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div style="color: black;" style="margin-top:auto;padding-top:24px;border-top:1px solid rgba(0,0,0,0.06)">
+            <div style="color: black; font-weight: 550;" class="nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>Logout</div>
