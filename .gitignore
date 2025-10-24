@@ -30,3 +30,6 @@ media/
 # IDE / Editor files
 .vscode/
 .idea/
+
+# test files 
+ztest.html
