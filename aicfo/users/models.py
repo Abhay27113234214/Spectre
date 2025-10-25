@@ -31,7 +31,7 @@ class Company(models.Model):
     website = models.URLField(max_length=300, blank=True)
     email = models.EmailField(unique=True)
 
-    phone_regex = RegexValidator(regex=r"^(\+91)?\d{10}$")
+    phone_regex = RegexValidator(regex=r"^(\+?91)?\d{10}$")
     phone = models.CharField(validators=[phone_regex], max_length=17, blank=True)
 
     industry = models.CharField(
