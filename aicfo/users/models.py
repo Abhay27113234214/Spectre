@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.core.validators import MinLengthValidator, RegexValidator
 
 # Create your models here.
@@ -50,7 +50,7 @@ class Company(models.Model):
 
 
 class AppUserManager(BaseUserManager):
-    def create_user(self, email, full_name, company=None, password=None, **extra_fields):
+    def create_user(self, email, full_name, company, password=None, **extra_fields):
         if not email:
             raise ValueError('Email field is mandatory!')
         if company is None and not extra_fields.get('is_superuser'):
@@ -68,7 +68,7 @@ class AppUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, email, full_name, password=None, **extra_fields):
+    def create_superuser(self, email, full_name, company=None , password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -85,12 +85,11 @@ class AppUserManager(BaseUserManager):
 
 
 
-class AppUser(AbstractBaseUser, PermissionsMixin):
+class AppUser(AbstractUser):
     ROLE_CHOICES = (
         ('ADMIN', 'Company Admin'),
         ('MEMBER', 'Employee Member'),
     )
-
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=150)
     phone_regex = RegexValidator(regex=r"^(\+91)?\d{10}$")

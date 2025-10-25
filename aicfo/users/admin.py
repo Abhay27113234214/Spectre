@@ -3,7 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 from .models import AppUser, Company
 
 # Register your models here.
-
 class AppUserAdmin(UserAdmin):
     model=AppUser
     list_display = ['email', 'full_name', 'company', 'role', 'is_staff', 'is_superuser', 'date_joined', 'phone']
@@ -22,10 +21,12 @@ class AppUserAdmin(UserAdmin):
         ('Important dates', {'fields': ('date_joined',)}),
     )
 
+    readonly_fields = ('last_login', 'date_joined')
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'full_name', 'company', 'role', 'phone', 'password'), 
+            'fields': ('email', 'full_name', 'company', 'role', 'phone', 'password1', 'password2'), 
         }),
     )
     def get_queryset(self, request):
